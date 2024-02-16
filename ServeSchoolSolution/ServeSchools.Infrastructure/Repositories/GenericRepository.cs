@@ -45,9 +45,7 @@ namespace ServeSchools.Infrastructure.Repositories
         public void Update(T entity)
         {
             T? currentObject = context.Set<T>().FirstOrDefault();
-            if (currentObject != null) { throw new Exception("Object not found!"); }
-            //context.Set<T>().Entry(currentObject).State = EntityState.Detached;
-            context.Set<T>().Attach(entity);
+            if (currentObject == null) { throw new Exception("Object not found!"); }
             context.Entry(entity).State = EntityState.Modified;
         }
     }

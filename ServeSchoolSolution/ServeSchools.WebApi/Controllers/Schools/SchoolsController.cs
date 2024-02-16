@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ServeSchools.Application.DTOs;
 using ServeSchools.Application.UnitOfWorks;
 using ServeSchools.Domain.Common;
+using ServeSchools.Domain.Repositories;
 using ServeSchools.Domain.Schools;
 
 namespace ServeSchools.WebApi.Controllers.Schools
@@ -12,11 +13,19 @@ namespace ServeSchools.WebApi.Controllers.Schools
     public class SchoolsController : ControllerBase
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly IGenericRepository<School> genericRepository;
+        private readonly ISchoolRepository schoolRepository;
         private readonly IMapper mapper;
 
-        public SchoolsController(IUnitOfWork unitOfWork, IMapper mapper)
-        {
+        public SchoolsController(
+            IUnitOfWork unitOfWork, 
+            IGenericRepository<School> genericRepository, 
+            ISchoolRepository schoolRepository, 
+            IMapper mapper
+        ) {
             this.unitOfWork = unitOfWork;
+            this.genericRepository = genericRepository;
+            this.schoolRepository = schoolRepository;
             this.mapper = mapper;
         }
 
@@ -96,16 +105,17 @@ namespace ServeSchools.WebApi.Controllers.Schools
                 }
                 // convert to school
                 School school = mapper.Map<School>(updateRequest);
-                School? newSchool = await unitOfWork.SchoolRepository.GetByIdAsync(updateRequest.Id);
+                School? newSchool = await genericRepository.GetByIdAsync(school.Id);
+
                 if (newSchool is null)
                 {
                     throw new Exception("School not found!");
                 }
                 newSchool.Name = updateRequest.Name;
                 newSchool.FoundingDate = updateRequest.FoundingDate;
+                newSchool.LastUpdated = DateTime.UtcNow;
 
-                // update school
-                unitOfWork.SchoolRepository.Update(school);
+                genericRepository.Update(newSchool);
                 int countTrans = await unitOfWork.SaveChangeAsync();
                 if (countTrans < 0)
                 {
