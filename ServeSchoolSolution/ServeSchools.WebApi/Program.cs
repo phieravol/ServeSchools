@@ -1,18 +1,18 @@
-using static ServeSchools.Application.DependencyInjection;
+using ServeSchools.WebApi.Mappings;
 using static ServeSchools.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+var mapper = MappingConfig.Initialize();
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register custom services
-builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 

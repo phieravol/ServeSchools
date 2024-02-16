@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using ServeSchools.Application.Common;
 using ServeSchools.Domain.Schools;
+using ServeSchools.Infrastructure.Data.Configurations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace ServeSchools.Infrastructure.Data.DbContexts
 {
-    public class ApplicationDbContext : DbContext, IAppliationDbContext
+    public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            base.OnModelCreating(builder);
+            modelBuilder.ApplyConfiguration(new SchoolConfiguration());
+            base.OnModelCreating(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -32,6 +32,7 @@ namespace ServeSchools.Infrastructure.Data.DbContexts
                 optionsBuilder.UseNpgsql(ConnectionString);
             }
         }
+
         public DbSet<School> Schools { get; set; }
     }
 }

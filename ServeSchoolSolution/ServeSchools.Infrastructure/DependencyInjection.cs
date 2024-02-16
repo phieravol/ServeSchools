@@ -1,8 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ServeSchools.Application.Common;
+using ServeSchools.Application.UnitOfWorks;
+using ServeSchools.Domain.Common;
+using ServeSchools.Domain.Repositories;
+using ServeSchools.Domain.Schools;
 using ServeSchools.Infrastructure.Data.DbContexts;
+using ServeSchools.Infrastructure.Repositories;
 
 namespace ServeSchools.Infrastructure
 {
@@ -16,7 +20,8 @@ namespace ServeSchools.Infrastructure
             {
                 options.UseNpgsql(connectionString);
             });
-            services.AddScoped<IAppliationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ISchoolRepository, SchoolRepository>();
             return services;
         }
     }

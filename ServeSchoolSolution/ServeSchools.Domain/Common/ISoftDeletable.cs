@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServeSchools.Domain.Base
+namespace ServeSchools.Domain.Common
 {
-    public class EntityBase<T>
+    public interface ISoftDeletable
     {
-        public required T Id { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
