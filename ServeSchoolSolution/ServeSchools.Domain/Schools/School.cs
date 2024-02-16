@@ -2,7 +2,7 @@
 
 namespace ServeSchools.Domain.Schools
 {
-    public class School : BaseAuditableEntity<int>, ISoftDeletable
+    public class School : BaseAuditableEntity<int>, ISoftDeletable, IEntityBase<int>
     {
         public required string Name { get; set; }
         public required DateTime FoundingDate { get; set; }

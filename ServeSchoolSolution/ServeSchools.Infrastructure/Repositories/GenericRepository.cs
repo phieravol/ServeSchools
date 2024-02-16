@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ServeSchools.Domain.Common;
 using ServeSchools.Infrastructure.Data.DbContexts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ServeSchools.Infrastructure.Repositories
 {
@@ -30,15 +25,15 @@ namespace ServeSchools.Infrastructure.Repositories
             context.Entry(entity).State = EntityState.Modified;
         }
 
-        public async Task<List<T>> GetAllAsync()
+        public async Task<List<T>> GetAllAsync<T>() where T : class, ISoftDeletable
         {
-            List<T> result = await context.Set<T>().ToListAsync();
+            List<T> result = await context.Set<T>().Where(x => !x.IsDeleted).ToListAsync();
             return result;
         }
 
-        public async Task<T?> GetByIdAsync(int? Id)
+        public async Task<T?> GetByIdAsync<T>(int? Id) where T : class, IEntityBase<int>, ISoftDeletable
         {
-            T? result = await context.Set<T>().FirstOrDefaultAsync();
+            T? result = await context.Set<T>().Where(x => x.Id == Id && !x.IsDeleted).FirstOrDefaultAsync();
             return result;
         }
 

@@ -20,9 +20,9 @@ namespace ServeSchools.Infrastructure
             {
                 options.UseNpgsql(connectionString);
             });
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IGenericRepository<School>, GenericRepository<School>>();
-            services.AddScoped<ISchoolRepository, SchoolRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<IGenericRepository<School>, GenericRepository<School>>();
+            services.AddTransient<ISchoolRepository, SchoolRepository>();
             return services;
         }
     }
