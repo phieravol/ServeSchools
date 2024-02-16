@@ -60,7 +60,7 @@ namespace ServeSchools.Infrastructure.Repositories
         {
             try
             {
-                School? school = await context.Schools.Where(x => x.Id == Id).SingleOrDefaultAsync();
+                School? school = await context.Schools.Where(x => x.Id == Id && !x.IsDeleted).SingleOrDefaultAsync();
                 return school;
             }
             catch (Exception ex)

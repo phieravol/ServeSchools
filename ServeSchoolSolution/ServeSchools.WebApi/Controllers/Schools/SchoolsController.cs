@@ -1,9 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ServeSchools.Application.DTOs;
-using ServeSchools.Application.UnitOfWorks;
-using ServeSchools.Domain.Common;
 using ServeSchools.Domain.Schools;
+using ServeSchools.WebApi.Services;
 
 namespace ServeSchools.WebApi.Controllers.Schools
 {
@@ -11,13 +9,11 @@ namespace ServeSchools.WebApi.Controllers.Schools
     [ApiController]
     public class SchoolsController : ControllerBase
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IMapper mapper;
-
-        public SchoolsController(IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            this.unitOfWork = unitOfWork;
-            this.mapper = mapper;
+        private readonly ISchoolService schoolService;
+        public SchoolsController(
+            ISchoolService schoolService
+        ) {
+            this.schoolService = schoolService;
         }
 
         [HttpGet]
@@ -25,7 +21,7 @@ namespace ServeSchools.WebApi.Controllers.Schools
         {
             try
             {
-                List<School> schools = await unitOfWork.SchoolRepository.GetAllAsync();
+                List<School> schools = await schoolService.GetAllSchoolsAsync();
                 return Ok(schools);
             }
             catch (Exception ex)
@@ -39,16 +35,7 @@ namespace ServeSchools.WebApi.Controllers.Schools
         {
             try
             {
-                if (Id is null)
-                {
-                    throw new Exception("Please select a school!");
-                }
-                    
-                School? school = await unitOfWork.SchoolRepository.GetByIdAsync(Id);
-                if (school is null)
-                {
-                    throw new Exception("School not found!");
-                }
+                School? school = await schoolService.GetSchoolAsync(Id);
                 return Ok(school);
             }
             catch (Exception ex)
@@ -62,19 +49,7 @@ namespace ServeSchools.WebApi.Controllers.Schools
         {
             try
             {
-                if (createRequest is null)
-                {
-                    return BadRequest("your update request not found!");
-                }
-                // convert to School
-                School school = mapper.Map<School>(createRequest);
-                // create school
-                school = await unitOfWork.SchoolRepository.CreateAsync(school);
-                int countTrans = await unitOfWork.SaveChangeAsync();
-                if (countTrans < 0)
-                {
-                    throw new Exception("Some error occur while saving in database!");
-                }
+                await schoolService.AddSchoolAsync(createRequest);
                 return Ok("Create school succesfully!");
             }
             catch (Exception ex)
@@ -90,27 +65,7 @@ namespace ServeSchools.WebApi.Controllers.Schools
         {
             try
             {
-                if (updateRequest is null)
-                {
-                    throw new Exception("Please enter information to update!");
-                }
-                // convert to school
-                School school = mapper.Map<School>(updateRequest);
-                School? newSchool = await unitOfWork.SchoolRepository.GetByIdAsync(updateRequest.Id);
-                if (newSchool is null)
-                {
-                    throw new Exception("School not found!");
-                }
-                newSchool.Name = updateRequest.Name;
-                newSchool.FoundingDate = updateRequest.FoundingDate;
-
-                // update school
-                unitOfWork.SchoolRepository.Update(school);
-                int countTrans = await unitOfWork.SaveChangeAsync();
-                if (countTrans < 0)
-                {
-                    throw new Exception("Some error occur while saving in database!");
-                }
+                await schoolService.EditSchoolAsync(updateRequest);
                 return Ok("Update school successfully!");
             }
             catch (Exception ex)
@@ -122,25 +77,11 @@ namespace ServeSchools.WebApi.Controllers.Schools
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteSchool(int? Id)
+        public async Task<IActionResult> RemoveSchool(int? Id)
         {
             try
             {
-                if (Id is null)
-                {
-                    throw new Exception("Please select school to update!");
-                }
-                School? school = await unitOfWork.SchoolRepository.GetByIdAsync(Id);
-                if (school is null)
-                {
-                    throw new Exception("School not found!");
-                }
-                await unitOfWork.SchoolRepository.SoftDeleteAsync(school);
-                int countTrans = await unitOfWork.SaveChangeAsync();
-                if (countTrans <= 0)
-                {
-                    throw new Exception("Some error occur while saving in database!");
-                }
+                await schoolService.SoftDeleteSchoolAsync(Id);
                 return Ok("Delete school successfully!");
             }
             catch (Exception ex)

@@ -1,12 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ServeSchools.Domain.Repositories;
+﻿using ServeSchools.Domain.Repositories;
 using ServeSchools.Infrastructure.Data.DbContexts;
 using ServeSchools.Infrastructure.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ServeSchools.Application.UnitOfWorks
 {
