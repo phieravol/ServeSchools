@@ -12,6 +12,7 @@ namespace ServeSchools.WebApi.Mappings
             {
                 config.CreateMap<CreateSchoolDTO, School>()
                     .ForMember(dest => dest.Name, otp => otp.MapFrom(dest => dest.Name))
+                    .ForMember(dest => dest.CreatedDate, otp => otp.MapFrom(dest => DateTime.UtcNow))
                     .ForMember(dest => dest.FoundingDate, otp => otp.MapFrom(dest => dest.FoundingDate))
                     .ReverseMap();
 
