@@ -15,7 +15,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddPresentationServices();
 builder.Services.AddSingleton(mapper);
-
+builder.Services.AddCors(p => p.AddPolicy("corsserve", builder =>
+{
+    builder.WithOrigins("http://localhost:3000/")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowAnyOrigin();
+}));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -26,7 +32,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
-
+app.UseCors("corsserve");
 app.MapControllers();
 
 app.Run();
